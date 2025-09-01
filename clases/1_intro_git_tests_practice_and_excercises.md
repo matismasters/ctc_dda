@@ -214,7 +214,7 @@ git commit -m "corrige bug en conteo de puntos con cartas repetidas"
 
 1. **Escribir tests primero** para verificar:
    * El mazo contiene exactamente 40 cartas
-   * No hay cartas 8, 9, 10
+   * No hay cartas 8, 9
    * Cada jugador recibe exactamente 3 cartas
    * Se asigna 1 carta como muestra
    * No hay cartas repetidas entre jugadores y muestra
