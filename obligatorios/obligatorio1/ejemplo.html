@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Coop Resources — V1 (números + botones)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 5 CSS (CDN) -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  >
+
+  <style>
+    body { background: #0b1220; color: #e6e8ef; }
+    .card { background: #121a2b; border: 1px solid #223150; }
+    .brand { letter-spacing: .5px; }
+    .resource-value { font-variant-numeric: tabular-nums; }
+    .finished {
+      background: linear-gradient(135deg, #0a7d40, #0f5132);
+      color: #d1f5e1; border: 1px solid #198754;
+    }
+    .muted { color: #b8bfd3; }
+    .badge-soft { background: #1b2742; color: #9fb4ff; }
+    .btn-resource { min-width: 140px; }
+    .small-note { font-size: .9rem; }
+    .resource-counter {
+      background: #1b2742;
+      border: 1px solid #3d4956;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    .resource-current {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .resource-total {
+      font-size: 1rem;
+      color: #9fb4ff;
+      font-weight: 500;
+    }
+    .form-control:focus {
+      background: #1b2742 !important;
+      border-color: #4dabf7 !important;
+      box-shadow: 0 0 0 0.25rem rgba(77, 171, 247, 0.25) !important;
+      color: #ffffff !important;
+    }
+    .is-invalid {
+      border-color: #dc3545 !important;
+      box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark border-bottom border-secondary-subtle" style="background:#0b1220;">
+    <div class="container">
+      <a class="navbar-brand brand d-flex align-items-center gap-2" href="#">
+        <span class="fw-bold">Coopera</span>
+        <span class="badge rounded-pill text-bg-secondary">V1 (números)</span>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        <span id="playerNameDisplay" class="muted">Jugador: <em>MatiasV</em></span>
+        <button id="changeNameBtn" class="btn btn-sm btn-outline-light">Cambiar nombre</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="container py-4">
+
+    <!-- Estado de la partida -->
+    <div id="stateBanner" class="alert alert-info border-0" role="alert">
+      mensaje de <strong>EXITO</strong>
+    </div>
+
+    <div id="stateBanner" class="alert alert-danger border-0" role="alert">
+      mensaje de <strong>ERROR</strong>
+    </div>
+
+
+    <!-- Metas -->
+    <div class="row g-3 mb-3" id="targetsRow">
+      <div class="col-12 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column text-center">
+            <h5 class="card-title mb-3 text-white">Madera</h5>
+            
+            <div class="resource-counter mb-3">
+              <div class="resource-current" id="woodCurrent">11</div>
+              <div class="resource-total">de <span id="woodTotal">87</span></div>
+            </div>
+            
+            <p class="card-text muted small-note mb-4">Suma 1 por click.</p>
+            <div class="mt-auto d-grid">
+              <button id="btnWood" class="btn btn-primary btn-resource">
+                +1 Madera
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column text-center">
+            <h5 class="card-title mb-3 text-white">Piedra</h5>
+            
+            <div class="resource-counter mb-3">
+              <div class="resource-current" id="stoneCurrent">1</div>
+              <div class="resource-total">de <span id="stoneTotal">37</span></div>
+            </div>
+            
+            <p class="card-text muted small-note mb-4">Suma 1 por click.</p>
+            <div class="mt-auto d-grid">
+              <button id="btnStone" class="btn btn-warning btn-resource">
+                +1 Piedra
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column text-center">
+            <h5 class="card-title mb-3 text-white">Comida</h5>
+            
+            <div class="resource-counter mb-3">
+              <div class="resource-current" id="foodCurrent">11</div>
+              <div class="resource-total">de <span id="foodTotal">90</span></div>
+            </div>
+            
+            <p class="card-text muted small-note mb-4">Suma 1 por click.</p>
+            <div class="mt-auto d-grid">
+              <button id="btnFood" class="btn btn-success btn-resource">
+                +1 Comida
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal para cambiar nombre -->
+  <div class="modal fade" id="changeNameModal" tabindex="-1" aria-labelledby="changeNameModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: #121a2b; border: 1px solid #223150;">
+        <div class="modal-header border-bottom border-secondary-subtle">
+          <h5 class="modal-title text-white" id="changeNameModalLabel">Cambiar nombre</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="changeNameForm">
+            <div class="mb-3">
+              <label for="newPlayerName" class="form-label text-white">Ingresa tu nombre:</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="newPlayerName" 
+                placeholder="Ej: MatiasV"
+                maxlength="20"
+                required
+                style="background: #1b2742; border: 1px solid #3d4956; color: #ffffff;"
+              >
+              <div class="form-text text-muted">Máximo 20 caracteres</div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-top border-secondary-subtle">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="acceptNameChange">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle (CDN) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <!-- JavaScript personalizado -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Referencias a elementos
+      const changeNameBtn = document.getElementById('changeNameBtn');
+      const changeNameModal = new bootstrap.Modal(document.getElementById('changeNameModal'));
+      const newPlayerNameInput = document.getElementById('newPlayerName');
+      const acceptNameChangeBtn = document.getElementById('acceptNameChange');
+      const playerNameDisplay = document.getElementById('playerNameDisplay');
+
+      // Abrir modal al hacer clic en "Cambiar nombre"
+      changeNameBtn.addEventListener('click', function() {
+        // Limpiar campo de entrada
+        newPlayerNameInput.value = '';
+        // Mostrar el modal
+        changeNameModal.show();
+        // Enfocar el campo de texto cuando se abre
+        setTimeout(() => {
+          newPlayerNameInput.focus();
+        }, 500);
+      });
+
+      // Manejar envío con botón "Aceptar"
+      acceptNameChangeBtn.addEventListener('click', function() {
+        const newName = newPlayerNameInput.value.trim();
+        
+        if (newName === '') {
+          // Mostrar error si está vacío
+          newPlayerNameInput.classList.add('is-invalid');
+          return;
+        }
+        
+        if (newName.length > 20) {
+          // Validar longitud máxima
+          newPlayerNameInput.classList.add('is-invalid');
+          return;
+        }
+
+        // Validar caracteres (solo letras, números y algunos especiales)
+        const validNamePattern = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]+$/;
+        if (!validNamePattern.test(newName)) {
+          newPlayerNameInput.classList.add('is-invalid');
+          return;
+        }
+
+        // Actualizar nombre mostrado
+        playerNameDisplay.innerHTML = `Jugador: <em>${newName}</em>`;
+        
+        // Limpiar estado de error
+        newPlayerNameInput.classList.remove('is-invalid');
+        
+        // Cerrar modal
+        changeNameModal.hide();
+      });
+
+      // Permitir envío con Enter
+      newPlayerNameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          acceptNameChangeBtn.click();
+        }
+      });
+
+      // Limpiar estado de error cuando se empieza a escribir
+      newPlayerNameInput.addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+      });
+    });
+  </script>
+
+</body>
+</html>
