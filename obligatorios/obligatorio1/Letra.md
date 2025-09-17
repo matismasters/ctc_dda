@@ -239,12 +239,6 @@ Escenario: Ordenar tabla por contribución
   Entonces los jugadores aparecen ordenados por total de recursos recolectados (mayor a menor)
   Y en caso de empate, se ordena por orden alfabético de nombre
 
-Escenario: Ver partida sin jugadores
-  Dado que una partida terminó pero no tuvo participantes
-  Cuando accedo a la aplicación
-  Entonces veo un mensaje indicando "Partida completada sin participantes"
-  Y las metas que fueron establecidas
-
 Escenario: Ver detalles de metas alcanzadas
   Dado que estoy viendo los resultados
   Cuando visualizo la información de la partida
