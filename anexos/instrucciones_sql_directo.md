@@ -82,6 +82,38 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 }
 ```
 
+## 5. Escribir el comando `SELECT`
+
+```csharp
+using (SqlConnection connection = new SqlConnection(connectionString))
+{
+    try
+    {
+        connection.Open();
+
+        string query = "SELECT Id, Nombre, Edad, Equipo FROM Jugadores";
+
+        using (SqlCommand command = new SqlCommand(query, connection))
+        using (SqlDataReader reader = command.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                int id = reader.GetInt32(0);              // Columna Id
+                string nombre = reader.GetString(1);      // Columna Nombre
+                int edad = reader.GetInt32(2);            // Columna Edad
+                string equipo = reader.IsDBNull(3) ? "Sin equipo" : reader.GetString(3); // Columna Equipo
+
+                Console.WriteLine($"Id: {id}, Nombre: {nombre}, Edad: {edad}, Equipo: {equipo}");
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Error: " + ex.Message);
+    }
+}
+```
+
 ---
 
 ## 6. Ejecutar el proyecto
