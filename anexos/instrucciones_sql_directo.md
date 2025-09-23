@@ -50,7 +50,7 @@ string connectionString = "Server=MI_SERVIDOR;Database=MI_BASE;User Id=USUARIO;P
 Ejemplo con SQL Server local:
 
 ```csharp
-string connectionString = "Server=localhost;Database=PruebaDB;Trusted_Connection=True;";
+string connectionString = "Server=localhost\\SQLEXPRESS;Database=naitv1;Trusted_Connection=True;TrustServerCertificate=True;"
 ```
 
 ---
