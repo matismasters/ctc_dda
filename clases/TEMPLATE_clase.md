@@ -324,3 +324,117 @@
 > **"[Frase clave que resume la enseñanza principal de la clase]"**
 
 [Párrafo de cierre que refuerza la importancia del tema]
+
+---
+
+## INSTRUCCIONES DE ESTILO PARA EL AUTOR
+
+### Filosofía pedagógica de las clases
+
+**🎯 Principio fundamental:** Los estudiantes deben comprender **la razón** por la cual las cosas se hacen de una manera antes de aprender **cómo** hacerlas. El enfoque es **conceptual primero, implementación después**.
+
+### Estructura de contenido recomendada
+
+**📚 Progresión pedagógica:**
+
+1. **Módulo 1**: Siempre empezar con el **"¿Por qué?"** 
+   - ¿Por qué existe este concepto/patrón/herramienta?
+   - ¿Qué problemas resuelve?
+   - ¿Cuál es el costo de no usarlo?
+
+2. **Módulo 2-3**: Desarrollar el **"¿Qué?"** y **"¿Cuándo?"**
+   - ¿Qué elementos componen la solución?
+   - ¿Cuándo aplicar cada parte?
+   - Diferencias conceptuales entre alternativas
+
+3. **Módulos posteriores**: Introducir el **"¿Cómo?"**
+   - Implementación práctica
+   - Ejemplos concretos pero no abrumadores
+   - Ejercicios progresivos
+
+### Manejo de código en las clases
+
+**✅ Código bueno (usar):**
+- Ejemplos conceptuales que ilustran diferencias (❌ vs ✅)
+- Fragmentos que muestran patrones, no implementaciones completas
+- Código comentado que explica el "por qué" de cada línea
+- Estructuras que muestran organización y arquitectura
+
+**❌ Código problemático (evitar):**
+- Implementaciones largas sin contexto
+- Código sin explicación conceptual previa
+- Ejemplos complejos al principio de temas nuevos
+- Sintaxis por sintaxis, sin justificación
+
+### Tono y estilo de escritura
+
+**🗣️ Lenguaje:**
+- **Profesional pero accesible**: términos técnicos explicados en contexto
+- **Directo y decisivo**: evitar ambigüedades sobre mejores prácticas
+- **Comparativo**: siempre mostrar el contraste malo vs bueno
+- **Práctico**: conectar conceptos con experiencias reales de desarrollo
+
+**💡 Estructura de ideas:**
+- Usar **blockquotes** (>) para objetivos y conceptos clave
+- **Negritas** para términos técnicos importantes
+- **Listas** para elementos que se complementan
+- **Comparaciones** para mostrar evolución de pensamiento
+
+### Ejercicios y actividades
+
+**🏃‍♂️ Diseño de ejercicios:**
+- **Progresivos**: de simple a complejo, construyendo sobre conocimiento previo
+- **Reflexivos**: incluir preguntas que fomenten análisis, no solo implementación
+- **Contextualizados**: usar escenarios realistas del desarrollo profesional
+- **Evaluables**: criterios claros de éxito que el estudiante puede verificar
+
+**📋 Estructura de ejercicios:**
+- **Instrucciones claras** paso a paso
+- **Criterios de éxito** objetivos y verificables
+- **Reflexión posterior**: ¿qué aprendiste? ¿qué problemas resuelve esto?
+- **Conexión con el futuro**: cómo se conecta con temas siguientes
+
+### Elementos pedagógicos clave
+
+**🎓 Para maximizar comprensión:**
+
+1. **Analogías y metáforas**: usar comparaciones del mundo real cuando sea apropiado
+2. **Progresión lógica**: cada sección construye sobre la anterior naturalmente
+3. **Repetición espaciada**: reforzar conceptos clave en diferentes contextos
+4. **Casos reales**: ejemplos extraídos de situaciones de desarrollo profesional
+5. **Anticipación de dudas**: abordar preguntas comunes antes de que surjan
+
+**🔗 Conectividad entre clases:**
+- **Referencias hacia atrás**: conectar con conceptos de clases anteriores
+- **Preparación hacia adelante**: sembrar curiosidad sobre temas siguientes
+- **Integración**: mostrar cómo todos los conceptos forman un sistema coherente
+
+### Indicadores de una clase bien diseñada
+
+**✅ Una clase exitosa debe lograr que el estudiante:**
+- Pueda explicar **por qué** se usa una técnica/patrón/herramienta
+- Identifique **cuándo** aplicar vs no aplicar un concepto
+- Sienta **confianza** para experimentar con el conocimiento adquirido
+- Vea la **conexión** entre el tema y el desarrollo profesional
+- Tenga **curiosidad** sobre cómo profundizar en el tema
+
+**❌ Señales de que una clase necesita mejora:**
+- El estudiante puede replicar código pero no explicar por qué
+- Preguntas frecuentes sobre "¿cuándo uso esto en la vida real?"
+- Confusion sobre la diferencia entre alternativas
+- Sensación de que el tema es "academico" o desconectado de la práctica
+- Dificultad para continuar en la clase siguiente
+
+### Notas específicas sobre ejemplos de código
+
+**📝 Al mostrar código:**
+- **Contexto primero**: explicar el escenario antes del código
+- **Comentarios pedagógicos**: comentarios que explican decisiones, no sintaxis
+- **Evolución gradual**: mostrar código "malo" → código "mejor" → código "profesional"
+- **Foco en decisiones**: resaltar por qué se eligió una aproximación sobre otra
+
+**🚫 Evitar:**
+- Código sin contexto o explicación previa
+- Ejemplos perfectos desde el inicio (no muestran proceso de mejora)
+- Sintaxis compleja antes de establecer fundamentos conceptuales
+- Implementaciones completas sin mostrar el razonamiento detrás
