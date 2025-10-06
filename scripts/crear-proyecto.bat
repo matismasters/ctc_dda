@@ -5,6 +5,12 @@ echo ==========================================
 echo    CONFIGURADOR DE PROYECTO ASP.NET CORE
 echo ==========================================
 echo.
+echo 📖 USO:
+echo    crear-proyecto.bat "NombreDelProyecto"
+echo    Ejemplo: crear-proyecto.bat "MiTiendaMVC"
+echo.
+echo 📁 El proyecto se creará en: ..\..\NombreDelProyecto
+echo.
 
 REM Verificar que dotnet esté instalado
 dotnet --version >nul 2>&1
@@ -19,25 +25,31 @@ echo ✅ .NET SDK detectado:
 dotnet --version
 echo.
 
-REM Solicitar nombre del proyecto
-set /p PROJECT_NAME="📝 Ingresa el nombre del proyecto (ej: MiApp): "
+REM Obtener nombre del proyecto desde parámetros
+set PROJECT_NAME=%1
+
+REM Si no se proporcionó parámetro, solicitar nombre
+if "%PROJECT_NAME%"=="" (
+    set /p PROJECT_NAME="📝 Ingresa el nombre del proyecto (ej: MiApp): "
+)
 
 REM Validar que se ingresó un nombre
 if "%PROJECT_NAME%"=="" (
-    echo ❌ ERROR: Debes ingresar un nombre para el proyecto
+    echo ❌ ERROR: Debes proporcionar un nombre para el proyecto
+    echo    Uso: crear-proyecto.bat "NombreDelProyecto"
+    echo    O ejecuta sin parámetros para ingresar el nombre interactivamente
     pause
     exit /b 1
 )
 
-REM Crear directorio principal
+REM Crear directorio principal dos niveles arriba
 echo.
 echo 📁 Creando estructura de directorios...
-mkdir "%PROJECT_NAME%" 2>nul
-cd "%PROJECT_NAME%"
+set PROJECT_PATH=..\..\%PROJECT_NAME%
+mkdir "%PROJECT_PATH%" 2>nul
+cd "%PROJECT_PATH%"
 
-REM Crear estructura de carpetas
-mkdir src 2>nul
-mkdir tests 2>nul
+REM No necesitamos crear carpetas adicionales - los proyectos se crean directamente
 
 echo.
 echo 🏗️  Creando proyectos...
@@ -46,71 +58,91 @@ REM Crear solución
 echo   → Creando solución %PROJECT_NAME%.sln
 dotnet new sln -n "%PROJECT_NAME%" --force
 
-REM Crear proyectos en src/
-echo   → Creando %PROJECT_NAME%.Web (MVC)
-dotnet new mvc -n "%PROJECT_NAME%.Web" -o "src\%PROJECT_NAME%.Web" --force
+REM Crear proyecto MVC
+echo   → Creando %PROJECT_NAME%.Web (MVC con Services y Data)
+dotnet new mvc -n "%PROJECT_NAME%.Web" -o "%PROJECT_NAME%.Web" --force
 
-echo   → Creando %PROJECT_NAME%.Core (Services y lógica)
-dotnet new classlib -n "%PROJECT_NAME%.Core" -o "src\%PROJECT_NAME%.Core" --force
-
-echo   → Creando %PROJECT_NAME%.Data (Repositorios y DbContext)
-dotnet new classlib -n "%PROJECT_NAME%.Data" -o "src\%PROJECT_NAME%.Data" --force
-
-REM Crear proyectos de tests
-echo   → Creando %PROJECT_NAME%.UnitTests
-dotnet new xunit -n "%PROJECT_NAME%.UnitTests" -o "tests\%PROJECT_NAME%.UnitTests" --force
-
-echo   → Creando %PROJECT_NAME%.IntegrationTests
-dotnet new xunit -n "%PROJECT_NAME%.IntegrationTests" -o "tests\%PROJECT_NAME%.IntegrationTests" --force
+REM Crear proyecto de tests
+echo   → Creando %PROJECT_NAME%.Tests
+dotnet new xunit -n "%PROJECT_NAME%.Tests" -o "%PROJECT_NAME%.Tests" --force
 
 echo.
 echo 🔗 Agregando proyectos a la solución...
 
 REM Agregar proyectos a la solución
-dotnet sln "%PROJECT_NAME%.sln" add "src\%PROJECT_NAME%.Web\%PROJECT_NAME%.Web.csproj"
-dotnet sln "%PROJECT_NAME%.sln" add "src\%PROJECT_NAME%.Core\%PROJECT_NAME%.Core.csproj"
-dotnet sln "%PROJECT_NAME%.sln" add "src\%PROJECT_NAME%.Data\%PROJECT_NAME%.Data.csproj"
-dotnet sln "%PROJECT_NAME%.sln" add "tests\%PROJECT_NAME%.UnitTests\%PROJECT_NAME%.UnitTests.csproj"
-dotnet sln "%PROJECT_NAME%.sln" add "tests\%PROJECT_NAME%.IntegrationTests\%PROJECT_NAME%.IntegrationTests.csproj"
+dotnet sln "%PROJECT_NAME%.sln" add "%PROJECT_NAME%.Web\%PROJECT_NAME%.Web.csproj"
+dotnet sln "%PROJECT_NAME%.sln" add "%PROJECT_NAME%.Tests\%PROJECT_NAME%.Tests.csproj"
 
 echo.
 echo 📦 Configurando referencias entre proyectos...
 
-REM Referencias de arquitectura
-echo   → %PROJECT_NAME%.Web → %PROJECT_NAME%.Core
-dotnet add "src\%PROJECT_NAME%.Web" reference "src\%PROJECT_NAME%.Core"
-
-echo   → %PROJECT_NAME%.Web → %PROJECT_NAME%.Data
-dotnet add "src\%PROJECT_NAME%.Web" reference "src\%PROJECT_NAME%.Data"
-
-echo   → %PROJECT_NAME%.Core → %PROJECT_NAME%.Data
-dotnet add "src\%PROJECT_NAME%.Core" reference "src\%PROJECT_NAME%.Data"
-
 REM Referencias de testing
-echo   → %PROJECT_NAME%.UnitTests → %PROJECT_NAME%.Core
-dotnet add "tests\%PROJECT_NAME%.UnitTests" reference "src\%PROJECT_NAME%.Core"
-
-echo   → %PROJECT_NAME%.IntegrationTests → %PROJECT_NAME%.Web
-dotnet add "tests\%PROJECT_NAME%.IntegrationTests" reference "src\%PROJECT_NAME%.Web"
+echo   → %PROJECT_NAME%.Tests → %PROJECT_NAME%.Web
+dotnet add "%PROJECT_NAME%.Tests" reference "%PROJECT_NAME%.Web"
 
 echo.
 echo 🧪 Agregando paquetes de testing...
 
-REM Agregar paquetes para testing de integración
+REM Agregar paquetes para testing
 echo   → Agregando Microsoft.AspNetCore.Mvc.Testing
-dotnet add "tests\%PROJECT_NAME%.IntegrationTests" package Microsoft.AspNetCore.Mvc.Testing
+dotnet add "%PROJECT_NAME%.Tests" package Microsoft.AspNetCore.Mvc.Testing
 
 echo   → Agregando Moq para unit tests
-dotnet add "tests\%PROJECT_NAME%.UnitTests" package Moq
+dotnet add "%PROJECT_NAME%.Tests" package Moq
 
 echo   → Agregando FluentAssertions para assertions expresivos
-dotnet add "tests\%PROJECT_NAME%.UnitTests" package FluentAssertions
-dotnet add "tests\%PROJECT_NAME%.IntegrationTests" package FluentAssertions
+dotnet add "%PROJECT_NAME%.Tests" package FluentAssertions
+
+echo.
+echo 🧪 Creando tests básicos de integración...
+
+REM Crear archivo de tests básicos de integración
+echo using Microsoft.AspNetCore.Mvc.Testing; > "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo using System.Net; >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo using Xunit; >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo namespace %PROJECT_NAME%.Tests; >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo public class HomeControllerTests : IClassFixture^<WebApplicationFactory^> >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo { >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     private readonly HttpClient _client; >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     public HomeControllerTests^(WebApplicationFactory factory^) >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     { >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         _client = factory.CreateClient^(^); >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     } >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     [Fact] >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     public async Task GET_Home_ReturnsSuccessStatusCode^(^) >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     { >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         // Arrange: el setup ya está hecho en constructor >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         // Act: hacer request real a la página Home >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         var response = await _client.GetAsync^("/"^); >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         // Assert: verificar que devuelve status 200 >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         response.EnsureSuccessStatusCode^(^); >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         Assert.Equal^(HttpStatusCode.OK, response.StatusCode^); >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     } >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     [Fact] >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     public async Task GET_Privacy_ReturnsSuccessStatusCode^(^) >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     { >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         // Arrange: el setup ya está hecho en constructor >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         // Act: hacer request real a la página Privacy >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         var response = await _client.GetAsync^("/Home/Privacy"^); >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo. >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         // Assert: verificar que devuelve status 200 >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         response.EnsureSuccessStatusCode^(^); >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo         Assert.Equal^(HttpStatusCode.OK, response.StatusCode^); >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo     } >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+echo } >> "%PROJECT_NAME%.Tests\HomeControllerTests.cs"
+
+echo   → Tests básicos creados: HomeControllerTests.cs
 
 echo.
 echo 📄 Creando archivo .gitignore...
-
-REM Crear .gitignore completo para .NET
 (
 echo # Build results
 echo [Dd]ebug/
@@ -190,20 +222,24 @@ REM Crear README básico
 (
 echo # %PROJECT_NAME%
 echo.
-echo Proyecto ASP.NET Core con arquitectura por capas.
+echo Proyecto ASP.NET Core con arquitectura por capas y testing MVC integrado.
 echo.
 echo ## Estructura del Proyecto
 echo.
 echo ```
 echo %PROJECT_NAME%/
-echo ├── src/
-echo │   ├── %PROJECT_NAME%.Web/          # Aplicación MVC
-echo │   ├── %PROJECT_NAME%.Core/         # Servicios y lógica de negocio
-echo │   └── %PROJECT_NAME%.Data/         # Repositorios y acceso a datos
-echo └── tests/
-echo     ├── %PROJECT_NAME%.UnitTests/           # Tests unitarios
-echo     └── %PROJECT_NAME%.IntegrationTests/    # Tests de integración
+echo ├── %PROJECT_NAME%.Web/              # Aplicación MVC (Controllers, Views, Services, Data)
+echo └── %PROJECT_NAME%.Tests/            # Tests unitarios e integración
 echo ```
+echo.
+echo ## Testing MVC
+echo.
+echo Este proyecto incluye configuración completa para testing de aplicaciones MVC:
+echo - **Tests Unitarios**: Para servicios y lógica de negocio
+echo - **Tests de Integración**: Para controladores y endpoints usando TestServer
+echo - **Tests básicos incluidos**: HomeControllerTests con tests para Home y Privacy
+echo - **Paquetes incluidos**: xUnit, Moq, FluentAssertions, Microsoft.AspNetCore.Mvc.Testing
+echo - **Estructura simple**: Solo 2 proyectos, fácil de entender y mantener
 echo.
 echo ## Comandos Útiles
 echo.
@@ -212,16 +248,21 @@ echo # Compilar toda la solución
 echo dotnet build
 echo.
 echo # Ejecutar la aplicación web
-echo dotnet run --project src\%PROJECT_NAME%.Web
+echo dotnet run --project %PROJECT_NAME%.Web
 echo.
 echo # Ejecutar todos los tests
 echo dotnet test
 echo.
-echo # Ejecutar solo tests unitarios
-echo dotnet test tests\%PROJECT_NAME%.UnitTests
+echo # Ejecutar tests con filtros específicos
+echo dotnet test --filter "FullyQualifiedName~Controller"
+echo dotnet test --filter "FullyQualifiedName~Service"
 echo.
-echo # Ejecutar solo tests de integración
-echo dotnet test tests\%PROJECT_NAME%.IntegrationTests
+echo # Tests con cobertura de código
+echo dotnet test --collect:"XPlat Code Coverage"
+echo.
+echo # Tests con filtros específicos
+echo dotnet test --filter "Category=Unit"
+echo dotnet test --filter "FullyQualifiedName~Controller"
 echo ```
 echo.
 echo ## Configuración de Desarrollo
@@ -229,7 +270,36 @@ echo.
 echo 1. Restaurar paquetes: `dotnet restore`
 echo 2. Compilar: `dotnet build`
 echo 3. Ejecutar tests: `dotnet test`
-echo 4. Ejecutar aplicación: `dotnet run --project src\%PROJECT_NAME%.Web`
+echo 4. Ejecutar aplicación: `dotnet run --project %PROJECT_NAME%.Web`
+echo.
+echo ## Testing MVC - Primeros Pasos
+echo.
+echo ### Tests Unitarios
+echo - Ubicación: `%PROJECT_NAME%.Tests`
+echo - Para: Servicios, lógica de negocio, validaciones
+echo - Framework: xUnit + Moq + FluentAssertions
+echo.
+echo ### Tests de Integración
+echo - Ubicación: `%PROJECT_NAME%.Tests`
+echo - Para: Controladores, endpoints, TestServer
+echo - Framework: xUnit + Microsoft.AspNetCore.Mvc.Testing
+echo - **Tests incluidos**: HomeControllerTests.cs con tests para Home y Privacy
+echo.
+echo ### Tests Básicos Incluidos
+echo El proyecto incluye tests de ejemplo que verifican:
+echo - **GET /**: Página Home devuelve status 200
+echo - **GET /Home/Privacy**: Página Privacy devuelve status 200
+echo.
+echo ### Ejemplo de Test de Integración
+echo ```csharp
+echo [Fact]
+echo public async Task GET_Home_ReturnsSuccessStatusCode()
+echo {
+echo     var response = await _client.GetAsync("/");
+echo     response.EnsureSuccessStatusCode();
+echo     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+echo }
+echo ```
 ) > README.md
 
 echo.
@@ -253,27 +323,24 @@ echo.
 echo 📁 Estructura creada en: %cd%
 echo.
 echo 🚀 PRÓXIMOS PASOS:
-echo    1. Ejecuta: git init
-echo    2. Ejecuta: git add .
-echo    3. Ejecuta: git commit -m "Initial commit"
-echo    4. Abre la solución: %PROJECT_NAME%.sln
+echo    1. Abre la solución: %PROJECT_NAME%.sln
+echo    2. Si quieres usar Git: git init
+echo    3. Ejecuta la aplicación: dotnet run --project %PROJECT_NAME%.Web
 echo.
 echo 💡 COMANDOS ÚTILES:
-echo    • Ejecutar aplicación: dotnet run --project src\%PROJECT_NAME%.Web
+echo    • Ejecutar aplicación: dotnet run --project %PROJECT_NAME%.Web
 echo    • Ejecutar todos los tests: dotnet test
 echo    • Abrir en Visual Studio: start %PROJECT_NAME%.sln
 echo.
-
-REM Preguntar si quiere inicializar Git
-set /p INIT_GIT="¿Quieres inicializar Git automáticamente? (s/n): "
-if /i "%INIT_GIT%"=="s" (
-    echo.
-    echo 📚 Inicializando repositorio Git...
-    git init
-    git add .
-    git commit -m "Initial commit: estructura de proyecto ASP.NET Core"
-    echo ✅ Repositorio Git inicializado y commit inicial creado
-)
+echo 📍 UBICACIÓN DEL PROYECTO:
+echo    El proyecto se creó en: %PROJECT_PATH%
+echo    Desde el directorio del script: %~dp0
+echo    Ruta absoluta: %cd%
+echo.
+echo 📁 ARCHIVOS INCLUIDOS:
+echo    • .gitignore configurado para .NET
+echo    • README.md con documentación completa
+echo    • Estructura simple: solo 2 proyectos
 
 echo.
 echo 🎉 ¡LISTO PARA DESARROLLAR!

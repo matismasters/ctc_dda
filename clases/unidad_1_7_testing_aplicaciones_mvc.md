@@ -152,21 +152,16 @@ public class CalculadoraService
 
 ```
 Solucion/
-├── src/
-│   ├── MiApp.Web/          # Proyecto MVC
-│   ├── MiApp.Core/         # Servicios y lógica
-│   └── MiApp.Data/         # Repositorios y DbContext
-└── tests/
-    ├── MiApp.UnitTests/    # Tests unitarios (Services, lógica)
-    └── MiApp.IntegrationTests/  # Tests de integración (Controllers, endpoints)
+├── MiApp.Web/              # Proyecto MVC (Controllers, Views, Services, Data)
+└── MiApp.Tests/            # Tests unitarios e integración
 ```
 
-**¿Por qué separar Unit vs Integration tests?**
+**¿Por qué una estructura simple?**
 
-* **Velocidad**: unitarios corren en milisegundos, integración en segundos
-* **Propósito**: unitarios verifican lógica, integración verifica coordinación
-* **Dependencias**: unitarios no necesitan base de datos, integración sí
-* **Debugging**: unitarios pinpoint exacto del problema, integración scope amplio
+* **Simplicidad**: solo 2 proyectos, fácil de entender y mantener
+* **Velocidad**: menos complejidad de configuración, más tiempo para programar
+* **Práctica**: estructura realista para proyectos de estudiantes
+* **Enfoque**: separar aplicación de testing, no sobre-ingeniería
 
 ---
 
@@ -278,22 +273,24 @@ public async Task POST_CalcularDescuento_ReturnsCorrectTotal()
 * **Control**: puedes configurar base de datos específica para tests
 * **Isolación**: cada test tiene su propia instancia
 
-### 4.2 Configuración básica de Integration Tests
+### 4.2 Configuración básica de Tests
 
 ```bash
-# Crear proyecto de tests de integración
-dotnet new xunit -n MiApp.IntegrationTests
-cd MiApp.IntegrationTests
+# Crear proyecto de tests
+dotnet new xunit -n MiApp.Tests
+cd MiApp.Tests
 
 # Agregar paquetes necesarios
 dotnet add package Microsoft.AspNetCore.Mvc.Testing
 dotnet add package Microsoft.EntityFrameworkCore.InMemory
+dotnet add package Moq
+dotnet add package FluentAssertions
 
 # Referenciar proyecto web
 dotnet add reference ../MiApp.Web/MiApp.Web.csproj
 ```
 
-### 4.3 Anatomia de un Integration Test básico
+### 4.3 Anatomía de un Test básico
 
 **Elementos necesarios:**
 
@@ -304,22 +301,22 @@ dotnet add reference ../MiApp.Web/MiApp.Web.csproj
 
 ```csharp
 // Estructura conceptual (sin implementación completa)
-public class CalculadoraControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class HomeControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
     
-    public CalculadoraControllerTests(WebApplicationFactory<Program> factory)
+    public HomeControllerTests(WebApplicationFactory<Program> factory)
     {
         _client = factory.CreateClient();
     }
     
     [Fact]
-    public async Task GET_Calculadora_ReturnsSuccessStatusCode()
+    public async Task GET_Home_ReturnsSuccessStatusCode()
     {
         // Arrange: el setup ya está hecho en constructor
         
         // Act: hacer request real
-        var response = await _client.GetAsync("/calculadora");
+        var response = await _client.GetAsync("/");
         
         // Assert: verificar response
         response.EnsureSuccessStatusCode();
@@ -387,8 +384,8 @@ reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coverage
 dotnet test
 
 # Ejecutar tests específicos
-dotnet test --filter "Category=Integration"
-dotnet test --filter "FullyQualifiedName~CalculadoraController"
+dotnet test --filter "FullyQualifiedName~HomeController"
+dotnet test --filter "FullyQualifiedName~Service"
 
 # Tests con detalles
 dotnet test --verbosity normal
@@ -404,10 +401,10 @@ dotnet test --no-parallel # para tests con recursos compartidos
 ```csharp
 // Categorizar tests
 [Fact, Trait("Category", "Unit")]
-public void UnitTest_Example() { }
+public void ServiceTest_Example() { }
 
 [Fact, Trait("Category", "Integration")]  
-public void IntegrationTest_Example() { }
+public void ControllerTest_Example() { }
 ```
 
 ---
@@ -433,8 +430,8 @@ public void IntegrationTest_Example() { }
 
 **Instrucciones:**
 
-1. **Configurar proyecto de integration tests:**
-   * Crear proyecto `MiApp.IntegrationTests` con xUnit
+1. **Configurar proyecto de tests:**
+   * Crear proyecto `MiApp.Tests` con xUnit
    * Agregar referencia a `Microsoft.AspNetCore.Mvc.Testing`
    * Referenciar el proyecto web principal
 
