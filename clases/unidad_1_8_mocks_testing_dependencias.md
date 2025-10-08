@@ -92,8 +92,7 @@ public async Task CrearProducto_ProductoValido_GuardaEnBaseDatos()
 ### 1.3 La solución: Aislamiento mediante Test Doubles
 
 **Test Doubles = actores de repuesto:**
-
-Como en el cine, donde un **doble de riesgo** reemplaza al actor principal en escenas peligrosas, los **test doubles** reemplzan dependencias reales en escenarios de testing.
+En testing, los **test doubles** son objetos que reemplazan dependencias reales para que los tests sean más controlados, rápidos y confiables. Permiten aislar el código bajo prueba de recursos externos o comportamientos impredecibles.
 
 **Beneficios del aislamiento:**
 
@@ -247,7 +246,7 @@ public async Task ProcesarPedido_PedidoComplejo_LogeaPassosCorrectamente()
 
 ---
 
-## Módulo 3 — Moq en acción: Primeros mocks profesionales
+## Módulo 3 — Moq en acción: Primeros mocks
 
 > Objetivo: aprender la **sintaxis y capacidades de Moq** para crear test doubles efectivos en C#.
 
@@ -353,7 +352,7 @@ mock.Verify(x => x.EnviarEmail(
 ), Times.Once);
 ```
 
-### 3.6 Por qué Moq es una herramienta profesional
+### 3.6 Por qué Moq es importante usar Moq cuando corresponde
 
 * **Tests rápidos**: sin I/O ni dependencias externas
 * **Tests deterministas**: comportamiento predecible en cada ejecución  
@@ -401,7 +400,7 @@ public class ProductosController : ControllerBase
 }
 ```
 
-**¿Cómo testear este controller sin?**
+**Como testear este controller sin lo siguiente**
 * Sistema de autenticación real
 * Cache Redis real  
 * Base de datos real
@@ -573,7 +572,7 @@ mock.SetupSequence(x => x.ObtenerSiguiente())
 
 * **Mock interfaces, no clases**: más fácil y rápido
 * **Verificar comportamiento, no implementación**: qué se llama, no cómo
-* **Un mock por dependencia**: clarity y mantenibilidad
+* **Un mock por dependencia**: claridad y mantenibilidad
 * **Setup mínimo necesario**: solo configurar lo que usa el test
 * **Nombres descriptivos**: qué escenario testea cada método
 
@@ -590,7 +589,7 @@ var texto = "prueba";
 Assert.Equal(6, texto.Length);
 ```
 
-**Testing implementation details:**
+**Testeando detalles de implementación:**
 ```csharp
 // ❌ Malo: testear orden exacto de operaciones internas
 mock.Verify(x => x.Paso1(), Times.Once);
