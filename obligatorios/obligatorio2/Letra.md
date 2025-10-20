@@ -22,7 +22,6 @@ El repositorio debe incluir la siguiente documentación técnica:
    - Relaciones entre clases (herencia, composición, inyección de dependencias)
 
 2. **Documentación de endpoints con Swagger**
-   - Especificación OpenAPI completa
    - Documentación de cada endpoint con ejemplos
    - Definición de modelos de request/response
    - Códigos de estado HTTP documentados
@@ -32,6 +31,7 @@ El repositorio debe incluir la siguiente documentación técnica:
    - Atributos de cada entidad
    - Relaciones con cardinalidades
    - Claves primarias y foráneas
+   - Normalizacion
 
 4. **Tests unitarios y de integración**
    - Cobertura mínima del 80% del código de lógica de negocio
@@ -59,10 +59,10 @@ El repositorio debe incluir la siguiente documentación técnica:
 
 El proyecto consiste en desarrollar una **API RESTful** en ASP.NET Core .NET 8 que proporcione servicios para generar preguntas de minijuegos y validar sus respuestas.
 
-La API debe exponer endpoints que permitan:
+La API debe exponer 2 endpoints principales:
 
-- **Generar preguntas** para tres tipos de minijuegos: matemáticas, memoria y lógica
-- **Validar respuestas** enviadas por clientes externos
+- **GET /api/minijuegos/pregunta?tipo={tipo}** - Generar preguntas para tres tipos de minijuegos: matemáticas, memoria y lógica
+- **POST /api/minijuegos/validar** - Validar respuestas enviadas por clientes externos
 
 Esta API está diseñada para ser consumida por aplicaciones cliente (web, móvil, etc.) que implementen la lógica de presentación de los minijuegos.
 
@@ -90,7 +90,7 @@ La API debe ser stateless, bien documentada y seguir principios REST.
 
 ```
 Escenario: Generar pregunta de matemáticas
-  Dado que hago una petición GET a /api/minijuegos/matematicas/pregunta
+  Dado que hago una petición GET a /api/minijuegos/pregunta?tipo=matematicas
   Cuando el servidor procesa la solicitud
   Entonces recibo status code 200
   Y el response contiene tres números aleatorios entre 1 y 100
@@ -98,7 +98,7 @@ Escenario: Generar pregunta de matemáticas
   Y tambien incluye el tipo de minijuego "matematicas"
 
 Escenario: Generar pregunta de memoria
-  Dado que hago una petición GET a /api/minijuegos/memoria/pregunta
+  Dado que hago una petición GET a /api/minijuegos/pregunta?tipo=memoria
   Cuando el servidor procesa la solicitud
   Entonces recibo status code 200
   Y el response contiene una secuencia de 5 números entre 1 y 20
@@ -108,7 +108,7 @@ Escenario: Generar pregunta de memoria
   Y tambien incluye el tipo de minijuego "memoria"
 
 Escenario: Generar pregunta de lógica
-  Dado que hago una petición GET a /api/minijuegos/logica/pregunta
+  Dado que hago una petición GET a /api/minijuegos/pregunta?tipo=logica
   Cuando el servidor procesa la solicitud
   Entonces recibo status code 200
   Y el response contiene tres números aleatorios entre 1 y 100
@@ -118,10 +118,16 @@ Escenario: Generar pregunta de lógica
   Y tambien incluye el tipo de minijuego "logica"
 
 Escenario: Tipo de minijuego inválido
-  Dado que hago una petición GET a /api/minijuegos/invalido/pregunta
+  Dado que hago una petición GET a /api/minijuegos/pregunta?tipo=invalido
   Cuando el servidor procesa la solicitud
-  Entonces recibo status code 404
+  Entonces recibo status code 400
   Y el response contiene un mensaje de error descriptivo
+
+Escenario: Parámetro tipo faltante
+  Dado que hago una petición GET a /api/minijuegos/pregunta sin parámetro tipo
+  Cuando el servidor procesa la solicitud
+  Entonces recibo status code 400
+  Y el response contiene mensaje "El parámetro 'tipo' es requerido"
 ```
 
 **Modelos de Response:**
@@ -170,7 +176,7 @@ Escenario: Tipo de minijuego inválido
 
 ```
 Escenario: Validar respuesta correcta de matemáticas
-  Dado que tengo una pregunta con ID "123e4567-e89b-12d3-a456-426614174000"
+  Dado que tengo una pregunta con ID "12345"
   Y los números eran [23, 45, 67]
   Cuando hago POST a /api/minijuegos/validar con respuesta 135
   Entonces recibo status code 200
@@ -265,7 +271,7 @@ Escenario: Validar con datos inválidos
   2. "¿Había exactamente 2 números impares?" | CODIGO: "2IMPARES"
   3. "¿La suma de todos los números superaba 50?" | CODIGO: "SUMATODOMAYOR50"
   4. "¿Había 2 números iguales?" | CODIGO: "2IGUALES"
-  5. "¿Había algún número menor a 10?" | CODIGO: "ALGUNOMAYOR10"
+  5. "¿Había algún número menor a 10?" | CODIGO: "ALGUNO_MENOR10"
 
 **Validación:**
 - Evaluar lógicamente cada tipo de pregunta
@@ -276,11 +282,11 @@ Escenario: Validar con datos inválidos
 **Generación:**
 - Tres números aleatorios entre 1 y 100
 - Seleccionar proposición aleatoria:
-  1. "Exactamente 2 números son pares"
-  2. "La suma de los 3 números es par"
-  3. "El número mayor es mayor que la suma de los otros dos"
-  4. "Hay al menos un número mayor que 50"
-  5. "Todos los números son diferentes"
+  1. "Exactamente 2 números son pares" | CODIGO: "2PARES"
+  2. "La suma de los 3 números es par" | CODIGO: "SUMA_PAR"
+  3. "El número mayor es mayor que la suma de los otros dos" | CODIGO: "MAYOR_SUMA_OTROS"
+  4. "Hay al menos un número mayor que 50" | CODIGO: "ALGUNO_MAYOR50"
+  5. "Todos los números son diferentes" | CODIGO: "TODOS_DIFERENTES"
 
 **Validación:**
 - Evaluar proposición lógicamente
@@ -296,47 +302,30 @@ MinijuegosAPI/
 ├── .gitignore                          # Archivos a ignorar por Git
 ├── MinijuegosAPI.sln                   # Solución de Visual Studio
 ├── 
-├── src/                                # Código fuente
-│   ├── MinijuegosAPI/                  # Proyecto principal
-│   │   ├── Controllers/                # Controllers de API
-│   │   │   ├── MinijuegosController.cs
-│   │   │   └── EstadisticasController.cs
-│   │   ├── Models/                     # DTOs y modelos de dominio
-│   │   │   ├── DTOs/
-│   │   │   ├── Entities/
-│   │   │   └── Requests/
-│   │   ├── Services/                   # Lógica de negocio
-│   │   │   ├── Interfaces/
-│   │   │   ├── MatematicasService.cs
-│   │   │   ├── MemoriaService.cs
-│   │   │   └── LogicaService.cs
-│   │   ├── Repositories/               # Acceso a datos
-│   │   │   ├── Interfaces/
-│   │   │   └── Implementations/
-│   │   ├── Data/                       # Contexto de base de datos
-│   │   │   ├── ApplicationDbContext.cs
-│   │   │   └── Migrations/
-│   │   ├── Middleware/                 # Middleware personalizado
-│   │   └── Configuration/              # Configuraciones
-│   │
-├── docs/                               # Documentación técnica
-│   ├── diagramas/
-│   │   ├── diagrama-clases-api.png     # Diagrama de clases de la API
-│   │   └── mer-database.png            # Diagrama MER
-│   │
-│   ├── postman/
-│   │   └── MinijuegosAPI.postman_collection.json
-│   │
-│   └── api-documentation.md            # Documentación adicional
+├── MinijuegosAPI/                      # Proyecto principal
+│   ├── Controllers/
+│   │   └── MinijuegosController.cs     # Controller principal
+│   ├── Models/
+│   │   ├── PreguntaResponse.cs         # DTOs de response
+│   │   ├── ValidarRequest.cs           # DTOs de request
+│   │   └── Pregunta.cs                 # Entidad para BD
+│   ├── Services/
+│   │   ├── IMinijuegoService.cs        # Interface del servicio
+│   │   └── MinijuegoService.cs         # Lógica de los 3 minijuegos
+│   ├── Data/
+│   │   └── ApplicationDbContext.cs     # Contexto de EF
+│   ├── Program.cs                      # Configuración de la app
+│   └── appsettings.json                # Configuración
+├── 
+├── docs/
+│   ├── diagrama-clases.png             # Diagrama de clases
+│   └── diagrama-mer.png                # Diagrama MER
 │
-├── tests/                              # Tests (OBLIGATORIO - cobertura >80%)
-│   ├── MinijuegosAPI.UnitTests/
-│   │   ├── Controllers/
-│   │   ├── Services/
-│   │   └── Repositories/
-│   └── MinijuegosAPI.IntegrationTests/
-│       ├── EndpointsTests.cs
-│       └── DatabaseTests.cs
+└── MinijuegosAPI.Tests/                # Tests
+    ├── Controllers/
+    │   └── MinijuegosControllerTests.cs
+    └── Services/
+        └── MinijuegoServiceTests.cs
 ```
 
 ---
@@ -394,14 +383,7 @@ MinijuegosAPI/
 - **Visual Studio / VS Code** - IDE
 - **Git** - Control de versiones
 - **GitHub** - Repositorio remoto
-- **Postman** - Testing manual de API
 - **Draw.io / Lucidchart** - Para diagramas
-
-## **Librerías Recomendadas**
-- **FluentValidation** - Validaciones avanzadas
-- **Serilog** - Logging estructurado
-- **AutoMapper** - Mapeo entre DTOs y entidades
-- **FluentAssertions** - Assertions más legibles en tests
 
 ---
 
