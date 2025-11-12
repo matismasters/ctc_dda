@@ -45,6 +45,12 @@ https://www.omdbapi.com/apikey.aspx
   - Cuando ingreso un rango de precios (por ejemplo, mínimo: 500, máximo: 1500) y hago click en el botón, se debe mostrar una lista de productos cuyo precio esté dentro de ese rango.
   - La aplicación MVC debe consumir la API para obtener los productos filtrados por precio. 
 
+[] Borrado por lotes.
+  - En la aplicación MVC, en la lista de productos, debe haber checkboxes junto a cada producto para seleccionar múltiples productos.
+  - Debe haber un botón "Eliminar Seleccionados" que, al hacer click, elimine todos los productos seleccionados.
+  - La aplicación MVC debe consumir la API para realizar el borrado de los productos seleccionados
+
+
   ## Crear API por alumno
 
   - GET `/api/NombreAlumnoPosta` - Envia un request al siguiente alumno
