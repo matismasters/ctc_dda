@@ -44,3 +44,11 @@ https://www.omdbapi.com/apikey.aspx
   - En la aplicación MVC, tengo que poder ver dos inputs para ingresar el precio mínimo y máximo, junto con un botón para filtrar.
   - Cuando ingreso un rango de precios (por ejemplo, mínimo: 500, máximo: 1500) y hago click en el botón, se debe mostrar una lista de productos cuyo precio esté dentro de ese rango.
   - La aplicación MVC debe consumir la API para obtener los productos filtrados por precio. 
+
+  ## Crear API por alumno
+
+  - GET `/api/NombreAlumnoPosta` - Envia un request al siguiente alumno
+  - GET `/api/JulianPosta` - Envia un request a /api/NachoPosta (apiUrl: de nacho)
+  - Console.WriteLine("Por aqui paso la posta de Julian");
+
+  Julian -> Nacho -> Alejandra -> Jimena -> Gabriel -> Fernando -> Joaquin -> Nelson -> Juan -> Angenora
