@@ -33,7 +33,7 @@ https://www.omdbapi.com/apikey.aspx
 
 [] Búsqueda por nombre de Producto.
   - En la aplicación MVC, tengo que poder ver un input de busqueda y botón para buscar.
-  - Cuando escribo en el input "Laptop" y hago click en el botón, se debe mostrar una lista de productos que contengan "Laptop" en su nombre. La búsqueda debe ser case insensitive.
+  - Cuando escribo en el input "Laptop" y hago click en el botón, se debe mostrar una lista de productos que contengan "Laptop" en su nombre. La búsqueda debe ser case insensitive. `.Where(u => EF.Functions.Like(u.Nombre, $"%{textobuscado}%"))`
   - La aplicación MVC debe consumir la API para obtener los productos filtrados.
   - El resultado de la búsqueda debe mostrarse en una nueva página llamada "Resultados de Búsqueda".
   - En la página de resultados de búsqueda, también debe mostrarse el formulario de búsqueda para permitir realizar nuevas búsquedas sin volver a la página principal.
